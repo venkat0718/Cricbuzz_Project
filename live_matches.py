@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 dotenv_path = r"D:\G6\Venkat\Datascience\project1\cricbuzz_project_venkat\utils.env"
 load_dotenv(dotenv_path)
 
-CRICBUZZ_API_KEY = os.getenv("RAPIDAPI_KEY")
+CRICBUZZ_API_KEY = os.getenv("API_KEY")
 if not CRICBUZZ_API_KEY:
     st.error("❌ RAPIDAPI_KEY not found in .env file or environment variables.")
     st.stop()
