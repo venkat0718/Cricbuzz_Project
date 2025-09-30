@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 # 🔑 Load API Key
 
 # Load .env explicitly
-dotenv_path = r"C:\Users\Amirtha\Downloads\cricbuzz_project_sanjay\utils\.env"
+dotenv_path = r"D:\G6\Venkat\Datascience\project1\cricbuzz_project_venkat\utils.env"
 load_dotenv(dotenv_path)
 
 CRICBUZZ_API_KEY = os.getenv("RAPIDAPI_KEY")
