@@ -22,6 +22,7 @@ Table Schema
 
 series
 
+
 Column	Type	Description
 series_id	BIGINT	Unique series identifier
 series_name	TEXT	Series name/title
