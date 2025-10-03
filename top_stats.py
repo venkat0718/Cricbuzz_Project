@@ -1,79 +1,58 @@
 import streamlit as st
-import http.client
-import json
 import requests
 import pandas as pd
-import os
 from urllib.parse import quote
-from dotenv import load_dotenv
 
 # ---------------- Setup ----------------
 st.set_page_config(page_title="🏏 Cricbuzz LiveStats", layout="wide")
-load_dotenv()
-API_KEY = os.getenv("RAPIDAPI_KEY")
 
-if not API_KEY:
-    st.error("❌ RAPIDAPI_KEY not found. Please set it in .env file.")
-    st.stop()
+# ✅ Direct API Key (no .env needed)
+API_KEY = "08efb2192fmsh6c8b42b60b9495fp142a78jsn3a4095e1f60e"
 
-HEADERS = {"x-rapidapi-key": API_KEY, "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com"}
-BASE_URL = "cricbuzz-cricket.p.rapidapi.com"
+HEADERS = {
+    "x-rapidapi-key": API_KEY,
+    "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com"
+}
+BASE_URL = "https://cricbuzz-cricket.p.rapidapi.com"
 
 # ---------------- Global CSS ----------------
 st.markdown("""
     <style>
-    /* Global Font */
-    h1, h2, h3, h4, h5 {
-        font-family: "Segoe UI", sans-serif !important;
-        font-weight: 600 !important;
-    }
-    /* Sidebar Styling */
-    section[data-testid="stSidebar"] {
-        background-color: #f8f9fa;
-        padding-top: 20px;
-    }
-    /* DataFrame Table Styling */
-    div[data-testid="stDataFrame"] table {
-        border: 1px solid #ddd;
-        border-radius: 5px;
-    }
-    /* Make player profile text slightly bigger */
-    .stMarkdown p {
-        font-size: 16px;
-    }
+    h1, h2, h3, h4, h5 { font-family: "Segoe UI", sans-serif !important; font-weight: 600 !important; }
+    section[data-testid="stSidebar"] { background-color: #f8f9fa; padding-top: 20px; }
+    div[data-testid="stDataFrame"] table { border: 1px solid #ddd; border-radius: 5px; }
+    .stMarkdown p { font-size: 16px; }
     </style>
 """, unsafe_allow_html=True)
 
 # ---------------- Helper Functions ----------------
 def search_players(query):
     query_encoded = quote(query)
-    conn = http.client.HTTPSConnection(BASE_URL)
-    conn.request("GET", f"/stats/v1/player/search?plrN={query_encoded}", headers=HEADERS)
-    res = conn.getresponse()
-    data = res.read()
-    conn.close()
-    try:
-        return json.loads(data.decode("utf-8"))
-    except:
-        return {}
-
-def get_player_details(player_id):
-    conn = http.client.HTTPSConnection(BASE_URL)
-    conn.request("GET", f"/stats/v1/player/{player_id}", headers=HEADERS)
-    res = conn.getresponse()
-    data = res.read()
-    conn.close()
-    try:
-        return json.loads(data.decode("utf-8"))
-    except:
-        return {}
-
-def get_player_stats(player_id, stat_type="batting"):
-    url = f"https://cricbuzz-cricket.p.rapidapi.com/stats/v1/player/{player_id}/{stat_type}"
+    url = f"{BASE_URL}/stats/v1/player/search?plrN={query_encoded}"
     response = requests.get(url, headers=HEADERS)
     if response.status_code == 200:
         return response.json()
-    return {}
+    else:
+        st.error(f"API Error {response.status_code}: {response.text}")
+        return {}
+
+def get_player_details(player_id):
+    url = f"{BASE_URL}/stats/v1/player/{player_id}"
+    response = requests.get(url, headers=HEADERS)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.error(f"API Error {response.status_code}: {response.text}")
+        return {}
+
+def get_player_stats(player_id, stat_type="batting"):
+    url = f"{BASE_URL}/stats/v1/player/{player_id}/{stat_type}"
+    response = requests.get(url, headers=HEADERS)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.error(f"API Error {response.status_code}: {response.text}")
+        return {}
 
 def parse_stats_table(stats_json, drop_columns=None):
     if not stats_json or "headers" not in stats_json or "values" not in stats_json:
@@ -86,10 +65,10 @@ def parse_stats_table(stats_json, drop_columns=None):
     return df
 
 # ---------------- Sidebar ----------------
-st.sidebar.title("ℹ️ About")
+st.sidebar.title("ℹ About")
 st.sidebar.markdown("""
-**Cricbuzz LiveStats Dashboard**  
-Built with **Streamlit + Cricbuzz API**, this app lets you explore:
+Cricbuzz LiveStats Dashboard  
+Built with Streamlit + Cricbuzz API, this app lets you explore:
 
 ✅ Real-time Player Profiles  
 ✅ ICC Rankings (Clean Card Design)  
@@ -114,12 +93,12 @@ if player_name:
         with tabs[0]:
             st.subheader(f"{selected_player['name']} ({selected_player['teamName']})")
             details = get_player_details(selected_player["id"])
-            st.write(f"📅 **DOB:** {selected_player.get('dob', 'N/A')}")
-            st.write(f"🧢 **Role:** {details.get('role', 'N/A')}")
-            st.write(f"🏏 **Batting Style:** {details.get('bat', 'N/A')}")
-            st.write(f"⚾ **Bowling Style:** {details.get('bowl', 'N/A')}")
-            st.write(f"🌍 **Birth Place:** {details.get('birthPlace', 'N/A')}")
-            st.write(f"👤👤👤 **Teams:** {details.get('teams', 'N/A')}")
+            st.write(f"📅 DOB: {selected_player.get('dob', 'N/A')}")
+            st.write(f"🧢 Role: {details.get('role', 'N/A')}")
+            st.write(f"🏏 Batting Style: {details.get('bat', 'N/A')}")
+            st.write(f"⚾ Bowling Style: {details.get('bowl', 'N/A')}")
+            st.write(f"🌍 Birth Place: {details.get('birthPlace', 'N/A')}")
+            st.write(f"👤👤👤 Teams: {details.get('teams', 'N/A')}")
 
             # ---------------- ICC Rankings ----------------
             if "rankings" in details and details["rankings"]:
@@ -181,7 +160,7 @@ if player_name:
 
         # ---------------- Bowling Stats Tab ----------------
         with tabs[2]:
-            st.subheader("☄️ Bowling Stats")
+            st.subheader("☄ Bowling Stats")
             bowling_stats = get_player_stats(selected_player["id"], "bowling")
             df_bowl = parse_stats_table(bowling_stats, drop_columns=["10w"])
             if not df_bowl.empty:
