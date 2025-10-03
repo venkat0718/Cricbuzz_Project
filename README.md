@@ -1,5 +1,5 @@
 
-                Happy data engineering!
+                 Happy data engineering!
 
 Cricket Data Loader: Series & Matches Table
 This project automates the ingestion, enrichment, and audit of cricket series and match data into a PostgreSQL database using the Cricbuzz RapidAPI endpoints. It supports full coverage from January 1, 2024, through today, including international, league, domestic, and women's cricket, with resilient handling of missing or ambiguous data.
