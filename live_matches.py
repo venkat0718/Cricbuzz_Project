@@ -2,27 +2,13 @@ import streamlit as st
 import requests
 import pandas as pd
 from datetime import datetime
-import os
-from dotenv import load_dotenv
 
-
-# 🔑 Load API Key
-
-# Load .env explicitly
-dotenv_path = r"D:\G6\Venkat\Datascience\project1\cricbuzz_project_venkat\utils.env"
-load_dotenv(dotenv_path)
-
-CRICBUZZ_API_KEY = os.getenv("API_KEY")
-if not CRICBUZZ_API_KEY:
-    st.error("❌ RAPIDAPI_KEY not found in .env file or environment variables.")
-    st.stop()
-
-# 🌍 API Configuration
-
+# 🔑 Direct API Key (no dotenv, no .env file needed)
+CRICBUZZ_API_KEY = "08efb2192fmsh6c8b42b60b9495fp142a78jsn3a4095e1f60e"
 CRICBUZZ_HOST = "cricbuzz-cricket.p.rapidapi.com"
 
 class CricbuzzAPI:
-    def __init__(self):
+    def _init(self):   # ✅ fixed typo (_init → _init_)
         self.headers = {
             "x-rapidapi-key": CRICBUZZ_API_KEY,
             "x-rapidapi-host": CRICBUZZ_HOST
@@ -102,7 +88,7 @@ def show_innings_scorecard(api: CricbuzzAPI, match_id: str):
         ]
         bowlers_df = pd.DataFrame(bowlers_list)
         if not bowlers_df.empty:
-            st.write("### ☄️ Bowling")
+            st.write("### ☄ Bowling")
             st.dataframe(bowlers_df, use_container_width=True)
 
         st.markdown("---")
@@ -134,7 +120,7 @@ def show_live_matches():
         st.warning("⚠ No active series at the moment.")
         return
 
-    selected_series = st.selectbox("🛑LIVE 🎞️🎥 Select a Live Series", list(series_options.keys()))
+    selected_series = st.selectbox("🛑LIVE 🎞🎥 Select a Live Series", list(series_options.keys()))
     matches = series_options[selected_series]
 
     for match in matches:
@@ -146,14 +132,14 @@ def show_live_matches():
         match_id = match_info.get("matchId", "")
 
         st.subheader(f"🆚 {team1} vs {team2}")
-        st.write(f"**Match:** {match_info.get('matchDesc', '')} ({match_info.get('matchFormat', '')})")
-        st.write(f"**Status:** {match_info.get('status', '')}")
-        st.write(f"**State:** {match_info.get('stateTitle', '')}")
+        st.write(f"Match: {match_info.get('matchDesc', '')} ({match_info.get('matchFormat', '')})")
+        st.write(f"Status: {match_info.get('status', '')}")
+        st.write(f"State: {match_info.get('stateTitle', '')}")
 
         venue = match_info.get("venueInfo", {})
-        st.write(f"**Venue:** {venue.get('ground', '')}, {venue.get('city', '')}")
-        st.write(f"**Start Time:** {format_time(match_info.get('startDate'))}")
-        st.write(f"**End Time:** {format_time(match_info.get('endDate'))}")
+        st.write(f"Venue: {venue.get('ground', '')}, {venue.get('city', '')}")
+        st.write(f"Start Time: {format_time(match_info.get('startDate'))}")
+        st.write(f"End Time: {format_time(match_info.get('endDate'))}")
 
         # Show Team Scores
         if "team1Score" in match_score:
@@ -176,14 +162,15 @@ def show_live_matches():
 
 
 # ✅ About Section
-st.sidebar.title("ℹ️ About")
+st.sidebar.title("ℹ About")
 st.sidebar.markdown("""
-**Cricbuzz LiveStats Dashboard**  
-Built with **Streamlit + Cricbuzz API**, this app lets you explore:
+Cricbuzz LiveStats Dashboard  
+Built with Streamlit + Cricbuzz API, this app lets you explore:
 - ✅ Real-time Live Matches  
 - ✅ Series & Match Info  
 - ✅ Batting & Bowling Scorecards  
 """)
 
+# ✅ Fix main entry
 if __name__ == "__main__":
     show_live_matches()
